@@ -16,7 +16,7 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new BookingCheckGetAll.Query { UserName = username }));
         }
 
-        [HttpPut]
+        [HttpPost]
         public async Task<IActionResult> CreateBookingCheck([Required] [FromBody] BookingCheckDataDto bookingCheck)
         {
             return HandleResult(await Mediator.Send(new BookingCheckCreate.Command { BookingCheck = bookingCheck }));

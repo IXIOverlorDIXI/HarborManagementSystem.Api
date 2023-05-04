@@ -23,5 +23,7 @@ namespace Application.DTOs
         public string AuthorPhotoUrl { get; set; }
         
         public bool DoesAuthorPay { get; set; }
+        
+        public bool IsAuthor { get; set; }
     }
 }

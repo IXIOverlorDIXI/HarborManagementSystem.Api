@@ -48,6 +48,14 @@ namespace Application.Review
                     .ProjectTo<ReviewPreviewDataDto>(_mapper.ConfigurationProvider)
                     .ToListAsync(cancellationToken);
 
+                foreach (var review in reviews)
+                {
+                    review.IsAuthor = _context.Reviews
+                        .Any(x =>
+                            x.Reviewer.UserName.Equals(_userAccessor.GetUsername())
+                            && x.Id.Equals(review.Id));
+                }
+                
                 return Result<List<ReviewPreviewDataDto>>.Success(reviews);
             }
         }
