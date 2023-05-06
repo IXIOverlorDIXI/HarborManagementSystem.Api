@@ -18,7 +18,7 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new StorageEnvironmentalConditionGetAll.Query { Id = id }));
         }
 
-        [AllowAnonymous]
+        //[AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> CreateStorageEnvironmentalCondition([Required] [FromBody] StorageEnvironmentalConditionDto storageEnvironmentalCondition)
         {

@@ -1,8 +1,12 @@
 using System;
 using Application.Core;
 using Application.DTOs;
+using Application.EnvironmentalCondition;
 using Application.Interfaces;
+using Application.Mqtt;
 using Application.Profiles;
+using Application.RelativePositionMetering;
+using Application.StorageEnvironmentalCondition;
 using FluentValidation;
 using Infrastructure.Blob;
 using Infrastructure.Security;
@@ -69,6 +73,12 @@ namespace API.Extensions
             services.AddAutoMapper(typeof(MappingProfiles).Assembly);
             services.AddScoped<IUserAccessor, UserAccessor>();
             services.AddScoped<IBlobManagerService, BlobManagerService>();
+
+            services.AddScoped<IMqttHandler, RelativePositionMeteringMqttHandler>();
+            services.AddScoped<IMqttHandler, EnvironmentalConditionMqttHandler>();
+            services.AddScoped<IMqttHandler, StorageEnvironmentalConditionMqttHandler>();
+
+            services.AddScoped<MqttClient>();
 
             return services;
         }

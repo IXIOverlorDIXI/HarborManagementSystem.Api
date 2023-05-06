@@ -1,5 +1,7 @@
+using System.Linq;
 using API.Extensions;
 using API.Middleware;
+using Application.Mqtt;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -7,6 +9,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace API
 {
@@ -36,8 +39,18 @@ namespace API
                 {
                     var origins = _config.GetSection("CorsOrigin:Links").Get<string[]>();
                     builder.WithOrigins(origins).AllowAnyHeader().AllowAnyMethod();
+                    //builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
                 });
             });
+            
+            services.AddLogging(builder =>
+            {
+                builder.AddConsole();
+                builder.AddDebug();
+            });
+            
+            var serviceProvider = services.BuildServiceProvider();
+            var mqttClient = serviceProvider.GetService<MqttClient>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -52,6 +65,7 @@ namespace API
             app.UseStaticFiles();
 
             app.UseCors("CorsPolicy");
+            //app.UseCors("AllowAll");
 
             app.UseAuthentication();
             app.UseAuthorization();

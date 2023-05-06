@@ -17,7 +17,7 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new EnvironmentalConditionGetAll.Query { Id = id }));
         }
 
-        [AllowAnonymous]
+        //[AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> CreateEnvironmentalCondition([Required] [FromBody] EnvironmentalConditionDto environmentalCondition)
         {

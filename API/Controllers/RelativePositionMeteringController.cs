@@ -17,7 +17,7 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new RelativePositionMeteringGetAll.Query { Id = id }));
         }
 
-        [AllowAnonymous]
+        //[AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> CreateRelativePositionMetering([Required] [FromBody] RelativePositionMeteringDto relativePositionMetering)
         {

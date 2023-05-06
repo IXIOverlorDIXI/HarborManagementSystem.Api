@@ -40,7 +40,7 @@ namespace API
             {
                 logger.LogError(exception, "Exception");
             }
-
+            
             await host.RunAsync();
         }
 
