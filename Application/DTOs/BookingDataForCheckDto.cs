@@ -1,0 +1,20 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace Application.DTOs
+{
+    public class BookingDataForCheckDto
+    {
+        public double TotalCost { get; set; }
+        
+        public List<AdditionalServiceDto> Services { get; set; }
+        
+        public string BerthName { get; set; }
+        
+        public string HarborName { get; set; }
+        
+        public DateTime StartDate { get; set; }
+        
+        public DateTime EndDate { get; set; }
+    }
+}

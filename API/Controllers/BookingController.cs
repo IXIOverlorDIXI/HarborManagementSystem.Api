@@ -35,6 +35,12 @@ namespace API.Controllers
         {
             return HandleResult(await Mediator.Send(new BookingForBerthGetAll.Query { Id = id}));
         }
+        
+        [HttpGet("bookingDataForCheck")]
+        public async Task<IActionResult> GetBookingDataForCheck([Required] [FromQuery] Guid id)
+        {
+            return HandleResult(await Mediator.Send(new BookingGetDataForCheck.Query { Id = id}));
+        }
 
         [HttpPost]
         public async Task<IActionResult> CreateBooking([Required] [FromBody] BookingDataDto booking)

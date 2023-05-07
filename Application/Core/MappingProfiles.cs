@@ -437,6 +437,26 @@ namespace Application.Core
                     option.MapFrom(entity => entity.BookingCheck != null))
                 .ForMember(dto => dto.AdditionalServices, option =>
                     option.MapFrom(entity => entity.AdditionalServices));
+
+            CreateMap<Domain.Entities.Booking, BookingDataForCheckDto>()
+                .ForMember(dto => dto.StartDate, option =>
+                    option.MapFrom(entity => entity.StartDate))
+                .ForMember(dto => dto.EndDate, option =>
+                    option.MapFrom(entity => entity.EndDate))
+                .ForMember(dto => dto.BerthName, option =>
+                    option.MapFrom(entity => entity.Berth.DisplayName))
+                .ForMember(dto => dto.HarborName, option =>
+                    option.MapFrom(entity => entity.Berth.Harbor.DisplayName))
+                .ForMember(dto => dto.Services, option =>
+                    option.MapFrom(entity => entity.AdditionalServices.Select(x => new AdditionalServiceDto()
+                    {
+                        Description = x.Service.Description,
+                        DisplayName = x.Service.DisplayName,
+                        Price = x.Service.Price
+                    }).ToList()))
+                .ForMember(dto => dto.TotalCost, option =>
+                    option.MapFrom(entity => entity.AdditionalServices.Sum(x => x.Service.Price) + entity.Berth.Price));
+
         }
     }
 }

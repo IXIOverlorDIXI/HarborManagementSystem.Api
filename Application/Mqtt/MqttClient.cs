@@ -24,7 +24,7 @@ namespace Application.Mqtt
         private readonly IMqttHandler _mqttRelativePositionMeteringHandler;
         private readonly IMqttHandler _mqttEnvironmentalConditionHandler;
         private readonly IMqttHandler _mqttStorageEnvironmentalConditionHandler;
-        private HiveMQClient _hiveMqClient;
+        private static HiveMQClient _hiveMqClient;
 
         public MqttClient()
         {
@@ -80,30 +80,37 @@ namespace Application.Mqtt
 
             _hiveMqClient.OnMessageReceived += async (sender, args) =>
             {
-                var topic = args.PublishMessage.Topic;
-                var payload = args.PublishMessage.PayloadAsString;
-                KeyValuePair<bool, string> result = new KeyValuePair<bool, string>(false, "Wrong topic.");
+                try
+                {
+                    var topic = args.PublishMessage.Topic;
+                    var payload = args.PublishMessage.PayloadAsString;
+                    KeyValuePair<bool, string> result = new KeyValuePair<bool, string>(false, "Wrong topic.");
+                    
+                    if (topic.Equals(mqttTopicsSection.GetValue<string>("RelativePositionMetering")))
+                    {
+                        result = await _mqttRelativePositionMeteringHandler.MqttAddHandle(payload);
+                    }
+                    else if (topic.Equals(mqttTopicsSection.GetValue<string>("EnvironmentalCondition")))
+                    {
+                        result = await _mqttEnvironmentalConditionHandler.MqttAddHandle(payload);
+                    }
+                    else if (topic.Equals(mqttTopicsSection.GetValue<string>("StorageEnvironmentalCondition")))
+                    {
+                        result = await _mqttStorageEnvironmentalConditionHandler.MqttAddHandle(payload);
+                    }
 
-                if (topic.Equals(mqttTopicsSection.GetValue<string>("RelativePositionMetering")))
-                {
-                    result = await _mqttRelativePositionMeteringHandler.MqttAddHandle(payload);
+                    if (result.Key)
+                    {
+                        _logger.LogInformation(result.Value);
+                    }
+                    else
+                    {
+                        _logger.LogError(result.Value);
+                    }
                 }
-                else if (topic.Equals(mqttTopicsSection.GetValue<string>("EnvironmentalCondition")))
+                catch (Exception e)
                 {
-                    result = await _mqttEnvironmentalConditionHandler.MqttAddHandle(payload);
-                }
-                else if (topic.Equals(mqttTopicsSection.GetValue<string>("StorageEnvironmentalCondition")))
-                {
-                    result = await _mqttStorageEnvironmentalConditionHandler.MqttAddHandle(payload);
-                }
-
-                if (result.Key)
-                {
-                    _logger.LogInformation(result.Value);
-                }
-                else
-                {
-                    _logger.LogError(result.Value);
+                    _logger.LogError(e.Message);
                 }
             };
 
