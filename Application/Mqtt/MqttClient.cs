@@ -1,17 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Application.EnvironmentalCondition;
 using Application.Interfaces;
 using Application.RelativePositionMetering;
 using Application.StorageEnvironmentalCondition;
-using HiveMQtt.Client;
-using HiveMQtt.Client.Options;
-using HiveMQtt.MQTT5.ReasonCodes;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using MQTTnet;
+using MQTTnet.Client;
+using MQTTnet.Extensions.ManagedClient;
+using MQTTnet.Packets;
 
 namespace Application.Mqtt
 {
@@ -24,7 +26,7 @@ namespace Application.Mqtt
         private readonly IMqttHandler _mqttRelativePositionMeteringHandler;
         private readonly IMqttHandler _mqttEnvironmentalConditionHandler;
         private readonly IMqttHandler _mqttStorageEnvironmentalConditionHandler;
-        private static HiveMQClient _hiveMqClient;
+        private static MqttClient _hiveMqClient;
 
         public MqttClient()
         {
@@ -53,39 +55,43 @@ namespace Application.Mqtt
 
         private async Task CreateMqttClient()
         {
-            var mqttClientOptions = new HiveMQClientOptions();
-
             var mqttBrokerSection = _config.GetSection("MqttBroker");
             var mqttClientCredentialsSection = mqttBrokerSection.GetSection("ClientCredentials");
             var mqttTopicsSection = mqttBrokerSection.GetSection("Topics");
 
-            mqttClientOptions.Host = mqttBrokerSection.GetValue<string>("Url");
-            mqttClientOptions.Port = mqttBrokerSection.GetValue<int>("Port");
-            mqttClientOptions.UserName = mqttClientCredentialsSection.GetValue<string>("Username");
-            mqttClientOptions.Password = mqttClientCredentialsSection.GetValue<string>("Password");
-            mqttClientOptions.UseTLS = true;
+            var mqttClientOptions = new MqttClientOptionsBuilder()
+                .WithClientId(mqttBrokerSection.GetValue<string>("ClientId"))
+                .WithTcpServer(
+                    mqttBrokerSection.GetValue<string>("Url"),
+                    mqttBrokerSection.GetValue<int>("Port"))
+                .WithCredentials(
+                    mqttClientCredentialsSection.GetValue<string>("Username"), 
+                    mqttClientCredentialsSection.GetValue<string>("Password"))
+                .WithCleanSession()
+                .WithTls()
+                .Build();
 
-            _hiveMqClient = new HiveMQClient(mqttClientOptions);
-
-            var connectResult = await _hiveMqClient.ConnectAsync().ConfigureAwait(false);
-
-            if (connectResult.ReasonCode == ConnAckReasonCode.Success)
+            var topics = new List<MqttTopicFilter>
             {
-                _logger.LogInformation("Mqtt broker connected successfully!");
-            }
-            else
-            {
-                _logger.LogError("Mqtt broker connected unsuccessfully!");
-            }
+                new MqttTopicFilter() { Topic = mqttTopicsSection.GetValue<string>("RelativePositionMetering") },
+                new MqttTopicFilter() { Topic = mqttTopicsSection.GetValue<string>("EnvironmentalCondition") },
+                new MqttTopicFilter() { Topic = mqttTopicsSection.GetValue<string>("StorageEnvironmentalCondition") },
+            };
 
-            _hiveMqClient.OnMessageReceived += async (sender, args) =>
+            var factory = new MqttFactory();
+            var client = factory.CreateManagedMqttClient();
+
+            client.ApplicationMessageReceivedAsync += async (args) =>
             {
                 try
                 {
-                    var topic = args.PublishMessage.Topic;
-                    var payload = args.PublishMessage.PayloadAsString;
-                    KeyValuePair<bool, string> result = new KeyValuePair<bool, string>(false, "Wrong topic.");
+                    var topic = args.ApplicationMessage.Topic;
+                    var payload = Encoding.UTF8.GetString(args.ApplicationMessage.PayloadSegment);
                     
+                   // _logger.LogInformation($"Received message on topic {args.ApplicationMessage.Topic}: {Encoding.UTF8.GetString(args.ApplicationMessage.Payload)}");
+                    
+                    KeyValuePair<bool, string> result = new KeyValuePair<bool, string>(false, "Wrong topic.");
+
                     if (topic.Equals(mqttTopicsSection.GetValue<string>("RelativePositionMetering")))
                     {
                         result = await _mqttRelativePositionMeteringHandler.MqttAddHandle(payload);
@@ -114,12 +120,21 @@ namespace Application.Mqtt
                 }
             };
 
-            await _hiveMqClient.SubscribeAsync(mqttTopicsSection.GetValue<string>("RelativePositionMetering"))
-                .ConfigureAwait(false);
-            await _hiveMqClient.SubscribeAsync(mqttTopicsSection.GetValue<string>("EnvironmentalCondition"))
-                .ConfigureAwait(false);
-            await _hiveMqClient.SubscribeAsync(mqttTopicsSection.GetValue<string>("StorageEnvironmentalCondition"))
-                .ConfigureAwait(false);
+            client.ConnectedAsync += async (e) => { _logger.LogInformation("Mqtt broker connected successfully!"); };
+
+            client.ConnectingFailedAsync += async (e) => { _logger.LogError("Mqtt broker connected unsuccessfully!"); };
+
+            client.DisconnectedAsync += async (e) => { _logger.LogWarning("Mqtt broker disconnected!"); };
+
+            client.ConnectionStateChangedAsync += async (e) => { _logger.LogWarning("Mqtt broker connection state changed!"); };
+            
+            await client.SubscribeAsync(topics);
+
+            await client.StartAsync(
+                new ManagedMqttClientOptionsBuilder()
+                    .WithAutoReconnectDelay(TimeSpan.FromSeconds(5))
+                    .WithClientOptions(mqttClientOptions)
+                    .Build());
         }
     }
 }

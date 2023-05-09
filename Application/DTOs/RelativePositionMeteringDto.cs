@@ -4,8 +4,6 @@ namespace Application.DTOs
 {
     public class RelativePositionMeteringDto
     {
-        public Guid Id { get; set; }
-
         public double LeftDistance { get; set; }
 
         public double RightDistance { get; set; }

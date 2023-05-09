@@ -267,8 +267,6 @@ namespace Application.Core
                     option => option.MapFrom(entity => entity.FileName));
             
             CreateMap<Domain.Entities.RelativePositionMetering, RelativePositionMeteringDto>()
-                .ForMember(dto => dto.Id, option =>
-                    option.MapFrom(entity => entity.Id))
                 .ForMember(dto => dto.LeftDistance, option =>
                     option.MapFrom(entity => entity.LeftDistance))
                 .ForMember(dto => dto.BackDistance, option =>
@@ -292,8 +290,6 @@ namespace Application.Core
                 .ReverseMap();
             
             CreateMap<Domain.Entities.EnvironmentalCondition, EnvironmentalConditionDto>()
-                .ForMember(dto => dto.Id, option =>
-                    option.MapFrom(entity => entity.Id))
                 .ForMember(dto => dto.BerthId, option =>
                     option.MapFrom(entity => entity.BerthId))
                 .ForMember(dto => dto.Temperature, option =>
@@ -313,8 +309,6 @@ namespace Application.Core
                 .ReverseMap();
             
             CreateMap<Domain.Entities.StorageEnvironmentalCondition, StorageEnvironmentalConditionDto>()
-                .ForMember(dto => dto.Id, option =>
-                    option.MapFrom(entity => entity.Id))
                 .ForMember(dto => dto.BerthId, option =>
                     option.MapFrom(entity => entity.BerthId))
                 .ForMember(dto => dto.AirPollution, option =>

@@ -5,8 +5,6 @@ namespace Application.DTOs
 {
     public class EnvironmentalConditionDto
     {
-        public Guid Id { get; set; }
-        
         public double Temperature { get; set; }
         
         public double AtmospherePressure { get; set; }

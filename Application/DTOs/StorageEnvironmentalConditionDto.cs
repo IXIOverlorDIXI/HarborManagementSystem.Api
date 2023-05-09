@@ -4,8 +4,6 @@ namespace Application.DTOs
 {
     public class StorageEnvironmentalConditionDto
     {
-        public Guid Id { get; set; }
-        
         public Guid BerthId { get; set; }
         
         public double AirPollution { get; set; }
