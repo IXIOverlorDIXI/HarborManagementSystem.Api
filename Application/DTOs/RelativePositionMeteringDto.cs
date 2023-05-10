@@ -15,6 +15,8 @@ namespace Application.DTOs
         public double RotationAngle { get; set; }
 
         public double TiltAngle { get; set; }
+        
+        public double RollAngle { get; set; }
 
         public double HeightHeadAboveWater { get; set; }
 

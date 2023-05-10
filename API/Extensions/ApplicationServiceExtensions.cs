@@ -1,14 +1,13 @@
 using System;
 using Application.Core;
-using Application.DTOs;
 using Application.EnvironmentalCondition;
 using Application.Interfaces;
-using Application.Mqtt;
 using Application.Profiles;
 using Application.RelativePositionMetering;
 using Application.StorageEnvironmentalCondition;
 using FluentValidation;
 using Infrastructure.Blob;
+using Infrastructure.Mqtt;
 using Infrastructure.Security;
 using MediatR;
 using Microsoft.EntityFrameworkCore;

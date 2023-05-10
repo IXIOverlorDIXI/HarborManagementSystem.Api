@@ -6,6 +6,7 @@ using Application.Core;
 using Application.DTOs;
 using Application.Interfaces;
 using AutoMapper;
+using Domain.Entities;
 using Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -42,12 +43,24 @@ namespace Application.BookingChecks
                     return Result<BookingCheckDataDto>.Failure("Fail, the booking does not exist.");
                 }
 
-                if ((await _context.Bookings
-                        .FirstOrDefaultAsync(x =>
-                                x.Id.Equals(request.BookingCheck.BookingId),
-                            cancellationToken)).BookingCheck != null)
+                var booking = await _context.Bookings
+                    .Include(x => x.BookingCheck)
+                    .Include(x => x.AdditionalServices)
+                    .ThenInclude(x => x.Service)
+                    .Include(x => x.Berth)
+                    .FirstOrDefaultAsync(x =>
+                            x.Id.Equals(request.BookingCheck.BookingId),
+                        cancellationToken);
+
+                if (booking.BookingCheck != null)
                 {
                     return Result<BookingCheckDataDto>.Failure("Fail, the booking check has already exist.");
+                }
+
+                if (booking.AdditionalServices.Sum(x => x.Service.Price) + booking.Berth.Price
+                    != request.BookingCheck.TotalCost)
+                {
+                    return Result<BookingCheckDataDto>.Failure("Fail, the booking check total sum is wrong.");
                 }
 
                 var bookingCheck = _mapper.Map<Domain.Entities.BookingCheck>(request.BookingCheck);

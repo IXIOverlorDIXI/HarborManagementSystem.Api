@@ -15,7 +15,7 @@ using MQTTnet.Client;
 using MQTTnet.Extensions.ManagedClient;
 using MQTTnet.Packets;
 
-namespace Application.Mqtt
+namespace Infrastructure.Mqtt
 {
     public class MqttClient
     {

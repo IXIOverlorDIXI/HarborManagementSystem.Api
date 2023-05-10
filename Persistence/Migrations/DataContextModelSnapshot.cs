@@ -425,6 +425,9 @@ namespace Persistence.Migrations
                     b.Property<double>("RightDistance")
                         .HasColumnType("float");
 
+                    b.Property<double>("RollAngle")
+                        .HasColumnType("float");
+
                     b.Property<double>("RotationAngle")
                         .HasColumnType("float");
 
@@ -626,7 +629,7 @@ namespace Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("7ff689a6-4811-4041-90ec-cb9bda1020f2"),
+                            Id = new Guid("4bd62d35-f578-4174-90f7-8d62e222045d"),
                             Description = "Free subscription for common user.",
                             DisplayName = "Default subscription",
                             IsDeleted = false,

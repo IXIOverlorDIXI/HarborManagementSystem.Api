@@ -283,6 +283,8 @@ namespace Application.Core
                     option.MapFrom(entity => entity.HeightTailAboveWater))
                 .ForMember(dto => dto.TiltAngle, option => 
                     option.MapFrom(entity => entity.TiltAngle))
+                .ForMember(dto => dto.RollAngle, option => 
+                    option.MapFrom(entity => entity.RollAngle))
                 .ForMember(dto => dto.BerthId, option => 
                     option.MapFrom(entity => entity.BerthId))
                 .ForMember(dto => dto.MeteringDate, option =>

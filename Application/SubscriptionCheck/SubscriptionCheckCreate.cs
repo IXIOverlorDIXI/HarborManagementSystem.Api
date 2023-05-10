@@ -38,9 +38,26 @@ namespace Application.SubscriptionCheck
 
             public async Task<Result<SubscriptionCheckDto>> Handle(Command request, CancellationToken cancellationToken)
             {
-                if (!_context.Subscriptions.Any(x => x.Id.Equals(request.SubscriptionCheck.SubscriptionId)))
+                var subscription = await _context.Subscriptions
+                    .Where(x => x.Id.Equals(request.SubscriptionCheck.SubscriptionId))
+                    .FirstOrDefaultAsync(cancellationToken);
+                var currentUser = await _context.Users
+                    .Where(x => x.UserName.Equals(_userAccessor.GetUsername()))
+                    .Include(x => x.Subscription)
+                    .FirstOrDefaultAsync(cancellationToken);
+                
+                if (subscription == null)
                 {
                     return Result<SubscriptionCheckDto>.Failure("Fail, this subscription does not exist.");
+                }
+
+                var subscriptionPrice = subscription.Price - currentUser.Subscription.Price < 0
+                    ? 0
+                    : subscription.Price - currentUser.Subscription.Price;
+
+                if (subscriptionPrice != request.SubscriptionCheck.TotalCost)
+                {
+                    return Result<SubscriptionCheckDto>.Failure("Wrong total sum.");
                 }
                 
                 var subscriptionCheck = _mapper.Map<SubscriptionСheck>(request.SubscriptionCheck);

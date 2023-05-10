@@ -487,6 +487,7 @@ namespace Persistence.Migrations
                     BackDistance = table.Column<double>(type: "float", nullable: false),
                     RotationAngle = table.Column<double>(type: "float", nullable: false),
                     TiltAngle = table.Column<double>(type: "float", nullable: false),
+                    RollAngle = table.Column<double>(type: "float", nullable: false),
                     HeightHeadAboveWater = table.Column<double>(type: "float", nullable: false),
                     HeightTailAboveWater = table.Column<double>(type: "float", nullable: false),
                     MeteringDate = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -628,7 +629,7 @@ namespace Persistence.Migrations
             migrationBuilder.InsertData(
                 table: "Subscriptions",
                 columns: new[] { "Id", "Description", "DisplayName", "IsDeleted", "MaxHarborAmount", "Price", "TaxOnBooking", "TaxOnServices" },
-                values: new object[] { new Guid("7ff689a6-4811-4041-90ec-cb9bda1020f2"), "Free subscription for common user.", "Default subscription", false, 0, 0.0, 0.0, 0.0 });
+                values: new object[] { new Guid("4bd62d35-f578-4174-90f7-8d62e222045d"), "Free subscription for common user.", "Default subscription", false, 0, 0.0, 0.0, 0.0 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AdditionalServices_BookingId",

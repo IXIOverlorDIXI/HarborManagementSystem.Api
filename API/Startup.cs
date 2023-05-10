@@ -1,8 +1,8 @@
 using System.Linq;
 using API.Extensions;
 using API.Middleware;
-using Application.Mqtt;
 using FluentValidation.AspNetCore;
+using Infrastructure.Mqtt;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;

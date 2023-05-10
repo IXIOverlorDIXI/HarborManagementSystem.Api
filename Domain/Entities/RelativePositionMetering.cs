@@ -16,6 +16,8 @@ namespace Domain.Entities
         
         public double TiltAngle { get; set; }
         
+        public double RollAngle { get; set; }
+        
         public double HeightHeadAboveWater { get; set; }
         
         public double HeightTailAboveWater { get; set; }
