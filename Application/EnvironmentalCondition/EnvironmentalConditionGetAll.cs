@@ -48,7 +48,7 @@ namespace Application.EnvironmentalCondition
                 }
 
                 var meterings = ship.Bookings?
-                    .Where(x => x.EndDate <= DateTime.Now && x.StartDate >= DateTime.Now)
+                    .Where(x => x.EndDate >= DateTime.Now && x.StartDate <= DateTime.Now)
                     .SelectMany(x => x.Berth?.EnvironmentalConditions
                         .Where(y => y.MeteringDate <= x.EndDate && y.MeteringDate >= x.StartDate))
                     .OrderBy(x => x.MeteringDate)
