@@ -17,6 +17,7 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new SubscriptionGet.Query{ Username = username}));
         }
         
+        [AllowAnonymous]
         [HttpGet("allSubscriptions")]
         public async Task<IActionResult> GetAllSubscriptions([Required] [FromQuery] string username)
         {

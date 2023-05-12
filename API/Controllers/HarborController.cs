@@ -51,6 +51,7 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new HarborDelete.Command { Id = id }));
         }
 
+        [AllowAnonymous]
         [HttpGet("photos")]
         public async Task<IActionResult> GetHarborPhotos([Required] [FromQuery] Guid id)
         {
@@ -69,6 +70,7 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new HarborPhotoDelete.Command { Id = id }));
         }
         
+        [AllowAnonymous]
         [HttpGet("documents")]
         public async Task<IActionResult> GetHarborDocuments([Required] [FromQuery] Guid id)
         {
