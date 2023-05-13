@@ -315,6 +315,8 @@ namespace Application.Core
                     option.MapFrom(entity => entity.BerthId))
                 .ForMember(dto => dto.AirPollution, option =>
                     option.MapFrom(entity => entity.AirPollution))
+                .ForMember(dto => dto.WaterPollution, option =>
+                    option.MapFrom(entity => entity.WaterPollution))
                 .ForMember(dto => dto.RadiationLevel, option =>
                     option.MapFrom(entity => entity.RadiationLevel))
                 .ForMember(dto => dto.ShipTemperature, option =>
