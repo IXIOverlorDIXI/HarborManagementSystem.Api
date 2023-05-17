@@ -445,6 +445,10 @@ namespace Application.Core
                     option.MapFrom(entity => entity.Berth.DisplayName))
                 .ForMember(dto => dto.HarborName, option =>
                     option.MapFrom(entity => entity.Berth.Harbor.DisplayName))
+                .ForMember(dto => dto.IBAN, option =>
+                    option.MapFrom(entity => entity.Berth.Harbor.IBAN))
+                .ForMember(dto => dto.BIC, option =>
+                    option.MapFrom(entity => entity.Berth.Harbor.BIC))
                 .ForMember(dto => dto.Services, option =>
                     option.MapFrom(entity => entity.AdditionalServices.Select(x => new AdditionalServiceDto()
                     {
