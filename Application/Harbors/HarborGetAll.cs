@@ -36,6 +36,7 @@ namespace Application.Harbors
             public async Task<Result<List<HarborPreviewDataDto>>> Handle(Query request, CancellationToken cancellationToken)
             {
                 var harbors = await _context.Harbors
+                    .Include(x => x.Owner)
                     .Where(x => !x.IsDeleted)
                     .ProjectTo<HarborPreviewDataDto>(_mapper.ConfigurationProvider)
                     .ToListAsync(cancellationToken);
@@ -47,6 +48,7 @@ namespace Application.Harbors
                         .ToListAsync(cancellationToken);
                     harbor.AverageRate = !reviews.Any() ? 0 : reviews.Average(x => x.ReviewMark);
                     harbor.ReviewsAmount = reviews.Count;
+                    harbor.IsOwner = _userAccessor.GetUsername().Equals(harbor.OwnerUserName);
                 }
 
                 return Result<List<HarborPreviewDataDto>>.Success(harbors);

@@ -43,6 +43,7 @@ namespace Application.Harbors
                 }
                 
                 var harbors = await _context.Harbors
+                    .Include(x => x.Owner)
                     .Where(x => !x.IsDeleted)
                     .Where(x => x.Owner.UserName.Equals(_userAccessor.GetUsername()))
                     .ProjectTo<HarborPreviewDataDto>(_mapper.ConfigurationProvider)
@@ -55,6 +56,7 @@ namespace Application.Harbors
                         .ToListAsync(cancellationToken);
                     harbor.AverageRate = !reviews.Any() ? 0 : reviews.Average(x => x.ReviewMark);
                     harbor.ReviewsAmount = reviews.Count;
+                    harbor.IsOwner = _userAccessor.GetUsername().Equals(harbor.OwnerUserName);
                 }
                 
                 return Result<List<HarborPreviewDataDto>>.Success(harbors);

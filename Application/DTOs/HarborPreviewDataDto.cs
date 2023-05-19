@@ -7,6 +7,8 @@ namespace Application.DTOs
     public class HarborPreviewDataDto
     {
         public Guid Id { get; set; }
+        
+        public string OwnerUserName { get; set; }
     
         public string DisplayName { get; set; }
         
@@ -25,5 +27,7 @@ namespace Application.DTOs
         public double AverageRate { get; set; }
         
         public int ReviewsAmount { get; set; }
+        
+        public bool IsOwner { get; set; }
     }
 }

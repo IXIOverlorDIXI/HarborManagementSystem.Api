@@ -160,6 +160,8 @@ namespace Application.Core
             CreateMap<Harbor, HarborPreviewDataDto>()
                 .ForMember(dto => dto.Id, option =>
                     option.MapFrom(entity => entity.Id))
+                .ForMember(dto => dto.OwnerUserName, option =>
+                    option.MapFrom(entity => entity.Owner.UserName))
                 .ForMember(dto => dto.DisplayName, option =>
                     option.MapFrom(entity => entity.DisplayName))
                 .ForMember(dto => dto.Description, option =>
