@@ -18,12 +18,12 @@ namespace Application.Harbors.Documents
 {
     public class HarborDocumentUpload
     {
-        public class Command : IRequest<Result<HarborDocumentDataDto>>
+        public class Command : IRequest<Result<HarborDocumentDto>>
         {
             public HarborDocumentDataDto File { get; set; }
         }
 
-        public class Handler : IRequestHandler<Command, Result<HarborDocumentDataDto>>
+        public class Handler : IRequestHandler<Command, Result<HarborDocumentDto>>
         {
             private readonly IMapper _mapper;
             private readonly IUserAccessor _userAccessor;
@@ -41,7 +41,7 @@ namespace Application.Harbors.Documents
                 _blobManagerService = blobManagerService;
             }
 
-            public async Task<Result<HarborDocumentDataDto>> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<Result<HarborDocumentDto>> Handle(Command request, CancellationToken cancellationToken)
             {
                 var harbor = await _context.Harbors
                     .Where(x => !x.IsDeleted)
@@ -51,7 +51,7 @@ namespace Application.Harbors.Documents
 
                 if (harbor == null)
                 {
-                    return Result<HarborDocumentDataDto>.Failure("Fail, harbor does not exist.");
+                    return Result<HarborDocumentDto>.Failure("Fail, harbor does not exist.");
                 }
                 
                 var id = Guid.NewGuid();
@@ -64,7 +64,7 @@ namespace Application.Harbors.Documents
 
                 if (string.IsNullOrEmpty(blobUrl))
                 {
-                    return Result<HarborDocumentDataDto>.Failure("Failed to upload document onto blob.");
+                    return Result<HarborDocumentDto>.Failure("Failed to upload document onto blob.");
                 }
                 
                 var harborDocument = new HarborDocument()
@@ -88,10 +88,10 @@ namespace Application.Harbors.Documents
 
                 if (!result)
                 {
-                    return Result<HarborDocumentDataDto>.Failure("Failed to save document into database.");
+                    return Result<HarborDocumentDto>.Failure("Failed to save document into database.");
                 }
 
-                return Result<HarborDocumentDataDto>.Success(request.File);
+                return Result<HarborDocumentDto>.Success(new HarborDocumentDto{DocumentId = id, Url = blobUrl});
             }
         }
     }

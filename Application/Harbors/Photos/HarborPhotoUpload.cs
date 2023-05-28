@@ -18,12 +18,12 @@ namespace Application.Harbors.Photos
 {
     public class HarborPhotoUpload
     {
-        public class Command : IRequest<Result<HarborPhotoDataDto>>
+        public class Command : IRequest<Result<HarborPhotoDto>>
         {
             public HarborPhotoDataDto File { get; set; }
         }
 
-        public class Handler : IRequestHandler<Command, Result<HarborPhotoDataDto>>
+        public class Handler : IRequestHandler<Command, Result<HarborPhotoDto>>
         {
             private readonly IMapper _mapper;
             private readonly IUserAccessor _userAccessor;
@@ -41,7 +41,7 @@ namespace Application.Harbors.Photos
                 _blobManagerService = blobManagerService;
             }
 
-            public async Task<Result<HarborPhotoDataDto>> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<Result<HarborPhotoDto>> Handle(Command request, CancellationToken cancellationToken)
             {
                 var harbor = await _context.Harbors
                     .Where(x => !x.IsDeleted)
@@ -51,7 +51,7 @@ namespace Application.Harbors.Photos
 
                 if (harbor == null)
                 {
-                    return Result<HarborPhotoDataDto>.Failure("Fail, harbor does not exist.");
+                    return Result<HarborPhotoDto>.Failure("Fail, harbor does not exist.");
                 }
                 
                 var id = Guid.NewGuid();
@@ -64,7 +64,7 @@ namespace Application.Harbors.Photos
 
                 if (string.IsNullOrEmpty(blobUrl))
                 {
-                    return Result<HarborPhotoDataDto>.Failure("Failed to upload photo onto blob.");
+                    return Result<HarborPhotoDto>.Failure("Failed to upload photo onto blob.");
                 }
                 
                 var harborPhoto = new HarborPhoto
@@ -87,10 +87,10 @@ namespace Application.Harbors.Photos
 
                 if (!result)
                 {
-                    return Result<HarborPhotoDataDto>.Failure("Failed to save photo into database.");
+                    return Result<HarborPhotoDto>.Failure("Failed to save photo into database.");
                 }
 
-                return Result<HarborPhotoDataDto>.Success(request.File);
+                return Result<HarborPhotoDto>.Success(new HarborPhotoDto{PhotoId = id, Url = blobUrl});
             }
         }
     }

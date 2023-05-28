@@ -17,5 +17,7 @@ namespace Application.DTOs
         public double TaxOnServices { get; set; }
         
         public double Price { get; set; }
+        
+        public int SubscriberAmount { get; set; }
     }
 }

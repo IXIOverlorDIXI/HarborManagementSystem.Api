@@ -17,12 +17,12 @@ namespace Application.Profiles.Photos
 {
     public class ProfilePhotoChange
     {
-        public class Command : IRequest<Result<ProfilePhotoDataDto>>
+        public class Command : IRequest<Result<FileDto>>
         {
             public ProfilePhotoDataDto ProfilePhoto { get; set; }
         }
 
-        public class Handler : IRequestHandler<Command, Result<ProfilePhotoDataDto>>
+        public class Handler : IRequestHandler<Command, Result<FileDto>>
         {
             private readonly IMapper _mapper;
             private readonly IUserAccessor _userAccessor;
@@ -40,7 +40,7 @@ namespace Application.Profiles.Photos
                 _blobManagerService = blobManagerService;
             }
 
-            public async Task<Result<ProfilePhotoDataDto>> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<Result<FileDto>> Handle(Command request, CancellationToken cancellationToken)
             {
                 var currentUser = await _context.Users
                     .Include(x => x.Photo)
@@ -49,7 +49,7 @@ namespace Application.Profiles.Photos
 
                 if (currentUser == null)
                 {
-                    return Result<ProfilePhotoDataDto>.Failure("Fail, user does not exist.");
+                    return Result<FileDto>.Failure("Fail, user does not exist.");
                 }
                 
                 bool result;
@@ -61,7 +61,7 @@ namespace Application.Profiles.Photos
 
                     if (!blobRemoveSuccess)
                     {
-                        return Result<ProfilePhotoDataDto>.Failure("Failed to delete photo from blob.");
+                        return Result<FileDto>.Failure("Failed to delete photo from blob.");
                     }
 
                     _context.Files.Remove(currentUser.Photo);
@@ -70,7 +70,7 @@ namespace Application.Profiles.Photos
 
                     if (!result)
                     {
-                        return Result<ProfilePhotoDataDto>.Failure("Failed to remove photo from database.");
+                        return Result<FileDto>.Failure("Failed to remove photo from database.");
                     }
                 }
 
@@ -84,7 +84,7 @@ namespace Application.Profiles.Photos
 
                 if (string.IsNullOrEmpty(blobUrl))
                 {
-                    return Result<ProfilePhotoDataDto>.Failure("Failed to upload photo onto blob.");
+                    return Result<FileDto>.Failure("Failed to upload photo onto blob.");
                 }
 
                 var file = new File
@@ -100,10 +100,10 @@ namespace Application.Profiles.Photos
 
                 if (!result)
                 {
-                    return Result<ProfilePhotoDataDto>.Failure("Failed to save photo into database.");
+                    return Result<FileDto>.Failure("Failed to save photo into database.");
                 }
 
-                return Result<ProfilePhotoDataDto>.Success(request.ProfilePhoto);
+                return Result<FileDto>.Success(new FileDto{Url = blobUrl});
             }
         }
     }

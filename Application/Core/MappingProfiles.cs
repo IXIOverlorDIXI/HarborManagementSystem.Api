@@ -47,6 +47,8 @@ namespace Application.Core
                     option.MapFrom(entity => entity.MaxHarborAmount))
                 .ForMember(dto => dto.Id, option =>
                     option.MapFrom(entity => entity.Id))
+                .ForMember(dto => dto.SubscriberAmount, option =>
+                    option.MapFrom(entity => entity.Users.Count))
                 .ReverseMap();
 
             CreateMap<SubscriptionСheck, SubscriptionCheckDto>()

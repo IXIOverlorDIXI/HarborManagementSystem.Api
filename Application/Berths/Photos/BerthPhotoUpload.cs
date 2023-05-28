@@ -18,12 +18,12 @@ namespace Application.Berths.Photos
 {
     public class BerthPhotoUpload
     {
-        public class Command : IRequest<Result<BerthPhotoDataDto>>
+        public class Command : IRequest<Result<BerthPhotoDto>>
         {
             public BerthPhotoDataDto File { get; set; }
         }
 
-        public class Handler : IRequestHandler<Command, Result<BerthPhotoDataDto>>
+        public class Handler : IRequestHandler<Command, Result<BerthPhotoDto>>
         {
             private readonly IMapper _mapper;
             private readonly IUserAccessor _userAccessor;
@@ -41,7 +41,7 @@ namespace Application.Berths.Photos
                 _blobManagerService = blobManagerService;
             }
 
-            public async Task<Result<BerthPhotoDataDto>> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<Result<BerthPhotoDto>> Handle(Command request, CancellationToken cancellationToken)
             {
                 var berth = await _context.Berths
                     .Where(x =>
@@ -52,7 +52,7 @@ namespace Application.Berths.Photos
 
                 if (berth == null)
                 {
-                    return Result<BerthPhotoDataDto>.Failure("Fail, berth does not exist.");
+                    return Result<BerthPhotoDto>.Failure("Fail, berth does not exist.");
                 }
 
                 var id = Guid.NewGuid();
@@ -65,7 +65,7 @@ namespace Application.Berths.Photos
 
                 if (string.IsNullOrEmpty(blobUrl))
                 {
-                    return Result<BerthPhotoDataDto>.Failure("Failed to upload photo onto blob.");
+                    return Result<BerthPhotoDto>.Failure("Failed to upload photo onto blob.");
                 }
 
                 var berthPhoto = new BerthPhoto()
@@ -88,10 +88,10 @@ namespace Application.Berths.Photos
 
                 if (!result)
                 {
-                    return Result<BerthPhotoDataDto>.Failure("Failed to save photo into database.");
+                    return Result<BerthPhotoDto>.Failure("Failed to save photo into database.");
                 }
 
-                return Result<BerthPhotoDataDto>.Success(request.File);
+                return Result<BerthPhotoDto>.Success(new BerthPhotoDto{PhotoId = id, Url = blobUrl});
             }
         }
     }
