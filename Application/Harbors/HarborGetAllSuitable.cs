@@ -7,6 +7,7 @@ using Application.DTOs;
 using Application.Interfaces;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using Domain.Consts;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
@@ -54,6 +55,13 @@ namespace Application.Harbors
                     harbor.AverageRate = !reviews.Any() ? 0 : reviews.Average(x => x.ReviewMark);
                     harbor.ReviewsAmount = reviews.Count;
                     harbor.IsOwner = _userAccessor.GetUsername().Equals(harbor.OwnerUserName);
+                    if (!harbor.Photos.Any())
+                    {
+                        harbor.Photos = new List<string>
+                        {
+                            DefaultFileLinks.DefaultImage
+                        };
+                    }
                 }
                 
                 return Result<List<HarborPreviewDataDto>>.Success(harbors);
