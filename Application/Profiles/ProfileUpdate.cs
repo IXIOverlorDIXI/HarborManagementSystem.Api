@@ -33,11 +33,6 @@ namespace Application.Profiles
 
             public async Task<Result<ProfileDto>> Handle(Command request, CancellationToken cancellationToken)
             {
-                if (!request.Profile.Username.Equals(_userAccessor.GetUsername()))
-                {
-                    return Result<ProfileDto>.Failure("Wrong username.");
-                }
-
                 if (await _context.Users
                         .CountAsync(x => x.UserName
                             .Equals(request.Profile.Username), cancellationToken: cancellationToken) > 1)

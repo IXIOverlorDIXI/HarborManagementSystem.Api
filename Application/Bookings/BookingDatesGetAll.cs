@@ -41,9 +41,9 @@ namespace Application.Bookings
 
                 var bookings = await _context.Bookings
                     .Where(x => x.EndDate > DateTime.Now 
-                                && request.Filter.BerthId.Equals(x.BerthId)
-                                && request.Filter.HarborId.Equals(x.Berth.HarborId)
-                                && request.Filter.ShipId.Equals(x.ShipId))
+                                && (request.Filter.BerthId.Equals(x.BerthId)
+                                || request.Filter.HarborId.Equals(x.Berth.HarborId)
+                                || request.Filter.ShipId.Equals(x.ShipId)))
                     .Include(x => x.BookingCheck)
                     .ToListAsync(cancellationToken);
 

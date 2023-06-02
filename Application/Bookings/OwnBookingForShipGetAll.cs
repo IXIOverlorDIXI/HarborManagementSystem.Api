@@ -88,7 +88,7 @@ namespace Application.Bookings
                 }
 
                 return Result<List<BookingPreviewDataDto>>
-                    .Success(_mapper.Map<List<BookingPreviewDataDto>>(bookingToView));
+                    .Success(_mapper.Map<List<BookingPreviewDataDto>>(bookingToView.OrderBy(x => x.StartDate).ToList()));
             }
         }
     }
