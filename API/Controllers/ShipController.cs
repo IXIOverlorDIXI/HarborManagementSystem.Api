@@ -17,6 +17,12 @@ namespace API.Controllers
         {
             return HandleResult(await Mediator.Send(new ShipGetAll.Query { }));
         }
+        
+        [HttpGet("byId")]
+        public async Task<IActionResult> GetShip([Required] [FromQuery] Guid id)
+        {
+            return HandleResult(await Mediator.Send(new ShipGet.Query { Id = id}));
+        }
 
         [HttpPost]
         public async Task<IActionResult> CreateShip([Required] [FromBody] ShipDataDto ship)

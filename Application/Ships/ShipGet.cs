@@ -12,16 +12,16 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
 
-namespace Application.Service
+namespace Application.Ships
 {
-    public class ServiceGetAll
+    public class ShipGet
     {
-        public class Query : IRequest<Result<List<ServiceDto>>>
+        public class Query : IRequest<Result<ShipDataDto>>
         {
             public Guid Id { get; set; }
         }
 
-        public class Handler : IRequestHandler<Query, Result<List<ServiceDto>>>
+        public class Handler : IRequestHandler<Query, Result<ShipDataDto>>
         {
             private readonly IMapper _mapper;
             private readonly IUserAccessor _userAccessor;
@@ -35,15 +35,14 @@ namespace Application.Service
                 _userAccessor = userAccessor;
             }
 
-            public async Task<Result<List<ServiceDto>>> Handle(Query request, CancellationToken cancellationToken)
+            public async Task<Result<ShipDataDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var services = await _context.Services
+                var ships = await _context.Ships
                     .Where(x => !x.IsDeleted)
-                    .Where(x => x.HarborId.Equals(request.Id))
-                    .ProjectTo<ServiceDto>(_mapper.ConfigurationProvider)
-                    .ToListAsync(cancellationToken);
+                    .ProjectTo<ShipDataDto>(_mapper.ConfigurationProvider)
+                    .FirstOrDefaultAsync(x => x.Id.Equals(request.Id), cancellationToken);
 
-                return Result<List<ServiceDto>>.Success(services);
+                return Result<ShipDataDto>.Success(ships);
             }
         }
     }

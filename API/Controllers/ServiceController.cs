@@ -11,6 +11,7 @@ namespace API.Controllers
     [Authorize]
     public class ServiceController : BaseApiController
     {
+        [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> GetAllServices([Required] [FromQuery] Guid id)
         {

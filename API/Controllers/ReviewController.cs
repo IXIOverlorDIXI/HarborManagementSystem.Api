@@ -12,10 +12,17 @@ namespace API.Controllers
     public class ReviewController : BaseApiController
     {
         [AllowAnonymous]
-        [HttpGet]
-        public async Task<IActionResult> GetAllReviews([Required] [FromQuery] Guid id)
+        [HttpGet("byBerth")]
+        public async Task<IActionResult> GetAllReviewsByBerth([Required] [FromQuery] Guid id)
         {
-            return HandleResult(await Mediator.Send(new ReviewGetAll.Query { Id = id }));
+            return HandleResult(await Mediator.Send(new ReviewByBerthGetAll.Query { Id = id }));
+        }
+        
+        [AllowAnonymous]
+        [HttpGet("byHarbor")]
+        public async Task<IActionResult> GetAllReviewsByHarbor([Required] [FromQuery] Guid id)
+        {
+            return HandleResult(await Mediator.Send(new ReviewByHarborGetAll.Query { Id = id }));
         }
 
         [HttpPost]

@@ -43,7 +43,7 @@ namespace Application.BookingChecks
                 
                 var user = await _context.Users
                     .Where(x => x.UserName.Equals(request.UserName))
-                    .Include(x => x.Ships)
+                    .Include(x => x.Ships.Where(x => !x.IsDeleted))
                     .ThenInclude(x => x.Bookings)
                     .ThenInclude(x => x.BookingCheck)
                     .FirstOrDefaultAsync(cancellationToken);
@@ -54,8 +54,8 @@ namespace Application.BookingChecks
                 }
 
                 var bookingChecks = user.Ships
-                    .Where(x => !x.IsDeleted)
                     .SelectMany(x => x.Bookings.Select(x => x.BookingCheck))
+                    .Where(x => x != null)
                     .OrderByDescending(x => x.Date)
                     .ToList();
 

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -37,8 +38,8 @@ namespace Application.Harbors
             public async Task<Result<List<HarborPreviewDataDto>>> Handle(Query request, CancellationToken cancellationToken)
             {
                 var harbors = await _context.Harbors
-                    .Include(x => x.Owner)
                     .Where(x => !x.IsDeleted)
+                    .Include(x => x.Owner)
                     .ProjectTo<HarborPreviewDataDto>(_mapper.ConfigurationProvider)
                     .ToListAsync(cancellationToken);
                 
@@ -49,7 +50,16 @@ namespace Application.Harbors
                         .ToListAsync(cancellationToken);
                     harbor.AverageRate = !reviews.Any() ? 0 : reviews.Average(x => x.ReviewMark);
                     harbor.ReviewsAmount = reviews.Count;
-                    harbor.IsOwner = _userAccessor.GetUsername().Equals(harbor.OwnerUserName);
+                    
+                    try
+                    {
+                        harbor.IsOwner = _userAccessor.GetUsername().Equals(harbor.OwnerUserName);
+                    }
+                    catch (Exception e)
+                    {
+                        harbor.IsOwner = false;
+                    }
+                    
                     if (!harbor.Photos.Any())
                     {
                         harbor.Photos = new List<string>

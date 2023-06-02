@@ -20,6 +20,13 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new HarborGetAll.Query {}));
         }
         
+        [AllowAnonymous]
+        [HttpGet("byId")]
+        public async Task<IActionResult> GetHarbor([Required] [FromQuery] Guid id)
+        {
+            return HandleResult(await Mediator.Send(new HarborGet.Query {Id = id}));
+        }
+        
         [HttpGet("ownHarbors")]
         public async Task<IActionResult> GetAllOwnHarbors([Required] [FromQuery] string userName)
         {
@@ -27,7 +34,7 @@ namespace API.Controllers
         }
         
         [AllowAnonymous]
-        [HttpGet("suitableHarbors")]
+        [HttpPost("suitableHarbors")]
         public async Task<IActionResult> GetAllSuitableHarbors([Required] [FromBody] ShipTypeDto shipType)
         {
             return HandleResult(await Mediator.Send(new HarborGetAllSuitable.Query { ShipType = shipType }));

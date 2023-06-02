@@ -52,6 +52,22 @@ namespace Application.Berths
                         .ToListAsync(cancellationToken);
                     berth.AverageRate = !reviews.Any() ? 0 : reviews.Average(x => x.ReviewMark);
                     berth.ReviewsAmount = reviews.Count;
+                    
+                    try
+                    {
+                        berth.IsOwner = _context.Users
+                            .Where(x => x.UserName
+                                .Equals(_userAccessor
+                                    .GetUsername()))
+                            .Any(a=> a.Harbors
+                                .Any(h => h.Berths
+                                    .Any(b => b.Id
+                                        .Equals(berth.Id))));
+                    }
+                    catch (Exception e)
+                    {
+                        berth.IsOwner = false;
+                    }
                 }
 
                 return Result<List<BerthPreviewDataDto>>.Success(berths);

@@ -17,12 +17,12 @@ namespace Application.Ships.Photos
 {
     public class ShipPhotoChange
     {
-        public class Command : IRequest<Result<ShipPhotoDataDto>>
+        public class Command : IRequest<Result<FileDto>>
         {
             public ShipPhotoDataDto File { get; set; }
         }
 
-        public class Handler : IRequestHandler<Command, Result<ShipPhotoDataDto>>
+        public class Handler : IRequestHandler<Command, Result<FileDto>>
         {
             private readonly IMapper _mapper;
             private readonly IUserAccessor _userAccessor;
@@ -40,7 +40,7 @@ namespace Application.Ships.Photos
                 _blobManagerService = blobManagerService;
             }
 
-            public async Task<Result<ShipPhotoDataDto>> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<Result<FileDto>> Handle(Command request, CancellationToken cancellationToken)
             {
                 var ship = await _context.Ships
                     .Where(x => !x.IsDeleted)
@@ -50,7 +50,7 @@ namespace Application.Ships.Photos
 
                 if (ship == null)
                 {
-                    return Result<ShipPhotoDataDto>.Failure("Fail, ship does not exist.");
+                    return Result<FileDto>.Failure("Fail, ship does not exist.");
                 }
                 
                 bool result;
@@ -62,7 +62,7 @@ namespace Application.Ships.Photos
 
                     if (!blobRemoveSuccess)
                     {
-                        return Result<ShipPhotoDataDto>.Failure("Failed to delete photo from blob.");
+                        return Result<FileDto>.Failure("Failed to delete photo from blob.");
                     }
 
                     _context.Files.Remove(ship.Photo);
@@ -71,7 +71,7 @@ namespace Application.Ships.Photos
 
                     if (!result)
                     {
-                        return Result<ShipPhotoDataDto>.Failure("Failed to remove photo from database.");
+                        return Result<FileDto>.Failure("Failed to remove photo from database.");
                     }
                 }
 
@@ -85,7 +85,7 @@ namespace Application.Ships.Photos
 
                 if (string.IsNullOrEmpty(blobUrl))
                 {
-                    return Result<ShipPhotoDataDto>.Failure("Failed to upload photo onto blob.");
+                    return Result<FileDto>.Failure("Failed to upload photo onto blob.");
                 }
 
                 var file = new File
@@ -101,10 +101,10 @@ namespace Application.Ships.Photos
 
                 if (!result)
                 {
-                    return Result<ShipPhotoDataDto>.Failure("Failed to save photo into database.");
+                    return Result<FileDto>.Failure("Failed to save photo into database.");
                 }
 
-                return Result<ShipPhotoDataDto>.Success(request.File);
+                return Result<FileDto>.Success(new FileDto{Url = blobUrl});
             }
         }
     }

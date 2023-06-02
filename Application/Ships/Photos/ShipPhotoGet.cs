@@ -61,7 +61,7 @@ namespace Application.Ships.Photos
                 {
                     return Result<FileDto>.Success(new FileDto
                     {
-                        Url = DefaultFileLinks.DefaultUserPhoto
+                        Url = DefaultFileLinks.DefaultImage
                     });
                 }
                 

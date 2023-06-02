@@ -18,9 +18,16 @@ namespace API.Controllers
         {
             return HandleResult(await Mediator.Send(new BerthGetAll.Query { Id = id}));
         }
+        
+        [AllowAnonymous]
+        [HttpGet("byId")]
+        public async Task<IActionResult> GetBerth([Required] [FromQuery] Guid id)
+        {
+            return HandleResult(await Mediator.Send(new BerthGet.Query { Id = id}));
+        }
 
         [AllowAnonymous]
-        [HttpGet("suitableBerths")]
+        [HttpPost("suitableBerths")]
         public async Task<IActionResult> GetAllSuitableBerths([Required] [FromBody] SuitableBerthSearchModel suitableBerthSearchModel)
         {
             return HandleResult(await Mediator.Send(new BerthGetAllSuitable.Query { SuitableBerthSearchModel = suitableBerthSearchModel }));
@@ -49,7 +56,8 @@ namespace API.Controllers
         {
             return HandleResult(await Mediator.Send(new BerthDelete.Command { Id = id }));
         }
-
+        
+        [AllowAnonymous]
         [HttpGet("photos")]
         public async Task<IActionResult> GetBerthPhotos([Required] [FromQuery] Guid id)
         {

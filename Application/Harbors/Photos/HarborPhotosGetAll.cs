@@ -7,6 +7,7 @@ using Application.Core;
 using Application.DTOs;
 using Application.Interfaces;
 using AutoMapper;
+using Domain.Consts;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -52,7 +53,7 @@ namespace Application.Harbors.Photos
                 {
                     return Result<List<HarborPhotoDto>>.Failure("Fail, harbor does not exist");
                 }
-                
+
                 var files = _mapper.Map<List<HarborPhotoDto>>(harbor.HarborPhotos);
 
                 return Result<List<HarborPhotoDto>>.Success(files);

@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Application.Core;
 using Application.DTOs;
 using Application.Interfaces;
-using Application.Service;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using MediatR;
@@ -15,7 +14,7 @@ using Persistence;
 
 namespace Application.Review
 {
-    public class ReviewGetAll
+    public class ReviewByHarborGetAll
     {
         public class Query : IRequest<Result<List<ReviewPreviewDataDto>>>
         {
@@ -27,7 +26,7 @@ namespace Application.Review
             private readonly IMapper _mapper;
             private readonly IUserAccessor _userAccessor;
             private readonly DataContext _context;
-            
+
 
             public Handler(IMapper mapper, IUserAccessor userAccessor, DataContext context)
             {
@@ -36,15 +35,16 @@ namespace Application.Review
                 _userAccessor = userAccessor;
             }
 
-            public async Task<Result<List<ReviewPreviewDataDto>>> Handle(Query request, CancellationToken cancellationToken)
+            public async Task<Result<List<ReviewPreviewDataDto>>> Handle(Query request,
+                CancellationToken cancellationToken)
             {
-                if (!_context.Berths.Any(x => x.Id.Equals(request.Id)))
+                if (!_context.Harbors.Any(x => x.Id.Equals(request.Id)))
                 {
-                    return Result<List<ReviewPreviewDataDto>>.Failure("Fail, the berth does not exist.");
+                    return Result<List<ReviewPreviewDataDto>>.Failure("Fail, the harbor does not exist.");
                 }
-                
+
                 var reviews = await _context.Reviews
-                    .Where(x => x.BerthId.Equals(request.Id))
+                    .Where(x => x.Berth.HarborId.Equals(request.Id))
                     .ProjectTo<ReviewPreviewDataDto>(_mapper.ConfigurationProvider)
                     .ToListAsync(cancellationToken);
 
@@ -55,7 +55,7 @@ namespace Application.Review
                             x.Reviewer.UserName.Equals(_userAccessor.GetUsername())
                             && x.Id.Equals(review.Id));
                 }
-                
+
                 return Result<List<ReviewPreviewDataDto>>.Success(reviews);
             }
         }

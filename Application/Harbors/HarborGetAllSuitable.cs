@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -42,7 +43,7 @@ namespace Application.Harbors
                     .Where(x => !x.IsDeleted)
                     .Where(x => x.Berths
                         .Any(y => y.SuitableShipTypes
-                            .Any(q => q.Id
+                            .Any(q => q.ShipType.Id
                                 .Equals(request.ShipType.Id))))
                     .ProjectTo<HarborPreviewDataDto>(_mapper.ConfigurationProvider)
                     .ToListAsync(cancellationToken);
@@ -54,7 +55,15 @@ namespace Application.Harbors
                         .ToListAsync(cancellationToken);
                     harbor.AverageRate = !reviews.Any() ? 0 : reviews.Average(x => x.ReviewMark);
                     harbor.ReviewsAmount = reviews.Count;
-                    harbor.IsOwner = _userAccessor.GetUsername().Equals(harbor.OwnerUserName);
+                    try
+                    {
+                        harbor.IsOwner = _userAccessor.GetUsername().Equals(harbor.OwnerUserName);
+                    }
+                    catch (Exception e)
+                    {
+                        harbor.IsOwner = false;
+                    }
+                    
                     if (!harbor.Photos.Any())
                     {
                         harbor.Photos = new List<string>

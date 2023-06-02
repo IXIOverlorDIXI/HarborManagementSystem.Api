@@ -35,23 +35,13 @@ namespace Application.Subscriptions
 
             public async Task<Result<AllSubscriptionsDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-                if (!request.Username.Equals(_userAccessor.GetUsername()))
-                {
-                    return Result<AllSubscriptionsDto>.Failure("Wrong username.");
-                }
-                
                 var currentUser = await _context.Users
                     .Where(user => user.UserName.Equals(_userAccessor.GetUsername()))
                     .Include(user => user.Subscription)
                     .FirstOrDefaultAsync(cancellationToken);
-
-                if (currentUser == null)
-                {
-                    return Result<AllSubscriptionsDto>.Failure("User not found.");
-                }
-
+                
                 var subscriptions = new AllSubscriptionsDto();
-
+                
                 subscriptions.Subscriptions = await _context.Subscriptions
                     .Where(x => !x.IsDeleted)
                     .OrderBy(subscription => subscription.Price)
@@ -60,7 +50,14 @@ namespace Application.Subscriptions
                     .ThenBy(x => x.TaxOnServices)
                     .ProjectTo<SubscriptionDto>(_mapper.ConfigurationProvider)
                     .ToListAsync(cancellationToken);
-
+                
+                if (currentUser == null)
+                {
+                    subscriptions.CurrentSubscriptionIndex = -1;
+                    
+                    return Result<AllSubscriptionsDto>.Success(subscriptions);
+                }
+                
                 if (currentUser.Subscription == null)
                 {
                     subscriptions.CurrentSubscriptionIndex = -1;

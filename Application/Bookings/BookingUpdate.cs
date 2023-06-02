@@ -131,7 +131,7 @@ namespace Application.Bookings
 
                 if (!result)
                 {
-                    return Result<BookingDataDto>.Failure("Failed to create the booking.");
+                    return Result<BookingDataDto>.Failure("Failed to update the booking.");
                 }
 
                 return Result<BookingDataDto>.Success(_mapper.Map<BookingDataDto>(booking));

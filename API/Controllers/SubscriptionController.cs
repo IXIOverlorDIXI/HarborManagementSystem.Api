@@ -19,9 +19,9 @@ namespace API.Controllers
         
         [AllowAnonymous]
         [HttpGet("allSubscriptions")]
-        public async Task<IActionResult> GetAllSubscriptions([Required] [FromQuery] string username)
+        public async Task<IActionResult> GetAllSubscriptions([FromQuery] string username = "")
         {
-            return HandleResult(await Mediator.Send(new SubscriptionGetAll.Query{ Username = username}));
+            return HandleResult(await Mediator.Send(new SubscriptionGetAll.Query{ Username = username ?? ""}));
         }
 
         [HttpPost("changeSubscription")]

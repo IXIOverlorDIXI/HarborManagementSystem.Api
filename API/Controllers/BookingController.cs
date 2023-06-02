@@ -12,6 +12,12 @@ namespace API.Controllers
     [Authorize]
     public class BookingController : BaseApiController
     {
+        [HttpGet("byId")]
+        public async Task<IActionResult> GetBooking([Required] [FromQuery] Guid id)
+        {
+            return HandleResult(await Mediator.Send(new BookingGet.Query { Id = id}));
+        }
+        
         [HttpGet("ownBookings")]
         public async Task<IActionResult> GetAllOwnBookings([Required] [FromQuery] string username)
         {
@@ -40,6 +46,12 @@ namespace API.Controllers
         public async Task<IActionResult> GetBookingDataForCheck([Required] [FromQuery] Guid id)
         {
             return HandleResult(await Mediator.Send(new BookingGetDataForCheck.Query { Id = id}));
+        }
+        
+        [HttpPost("getReservedDates")]
+        public async Task<IActionResult> GetBookingsDates([Required] [FromBody] BookingsFilter filter)
+        {
+            return HandleResult(await Mediator.Send(new BookingDatesGetAll.Query { Filter = filter}));
         }
 
         [HttpPost]

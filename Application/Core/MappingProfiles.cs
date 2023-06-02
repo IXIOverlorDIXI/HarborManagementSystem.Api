@@ -48,8 +48,23 @@ namespace Application.Core
                 .ForMember(dto => dto.Id, option =>
                     option.MapFrom(entity => entity.Id))
                 .ForMember(dto => dto.SubscriberAmount, option =>
-                    option.MapFrom(entity => entity.Users.Count))
-                .ReverseMap();
+                    option.MapFrom(entity => entity.Users.Count));
+
+            CreateMap<SubscriptionDto, Subscription>()
+                .ForMember(entity => entity.DisplayName, option =>
+                    option.MapFrom(dto => dto.DisplayName))
+                .ForMember(entity => entity.Description, option =>
+                    option.MapFrom(dto => dto.Description))
+                .ForMember(entity => entity.TaxOnBooking, option =>
+                    option.MapFrom(dto => dto.TaxOnBooking))
+                .ForMember(entity => entity.TaxOnServices, option =>
+                    option.MapFrom(dto => dto.TaxOnServices))
+                .ForMember(entity => entity.Price, option =>
+                    option.MapFrom(dto => dto.Price))
+                .ForMember(entity => entity.MaxHarborAmount, option =>
+                    option.MapFrom(dto => dto.MaxHarborAmount))
+                .ForMember(entity => entity.Id, option =>
+                    option.MapFrom(dto => dto.Id));
 
             CreateMap<SubscriptionСheck, SubscriptionCheckDto>()
                 .ForMember(dto => dto.Description, option =>
@@ -177,7 +192,11 @@ namespace Application.Core
                 .ForMember(dto => dto.GeolocationLatitude,
                     option => option.MapFrom(entity => entity.Geolocation.Y))
                 .ForMember(dto => dto.Photos, option =>
-                    option.MapFrom(entity => entity.HarborPhotos.Select(x => x.Photo.Url).ToList()));
+                    option.MapFrom(entity => entity.HarborPhotos.Select(x => x.Photo.Url).ToList()))
+                .ForMember(dto => dto.IBAN, option =>
+                    option.MapFrom(entity => entity.IBAN))
+                .ForMember(dto => dto.BIC, option =>
+                    option.MapFrom(entity => entity.BIC));
 
             CreateMap<HarborPhoto, HarborPhotoDto>()
                 .ForMember(dto => dto.PhotoId, option =>
@@ -203,6 +222,26 @@ namespace Application.Core
                 .ForMember(dto => dto.Price, option =>
                     option.MapFrom(entity => entity.Price))
                 .ReverseMap();
+            
+            CreateMap<Domain.Entities.Service, ServicePreviewDto>()
+                .ForMember(dto => dto.Id, option =>
+                    option.MapFrom(entity => entity.Id))
+                .ForMember(dto => dto.Description, option =>
+                    option.MapFrom(entity => entity.Description))
+                .ForMember(dto => dto.DisplayName, option =>
+                    option.MapFrom(entity => entity.DisplayName))
+                .ForMember(dto => dto.Price, option =>
+                    option.MapFrom(entity => entity.Price));
+            
+            CreateMap<Domain.Entities.AdditionalService, ServicePreviewDto>()
+                .ForMember(dto => dto.Id, option =>
+                    option.MapFrom(entity => entity.ServiceId))
+                .ForMember(dto => dto.Description, option =>
+                    option.MapFrom(entity => entity.Service.Description))
+                .ForMember(dto => dto.DisplayName, option =>
+                    option.MapFrom(entity => entity.Service.DisplayName))
+                .ForMember(dto => dto.Price, option =>
+                    option.MapFrom(entity => entity.Service.Price));
 
             CreateMap<Domain.Entities.Berth, BerthPreviewDataDto>()
                 .ForMember(dto => dto.Id, option =>
@@ -396,6 +435,22 @@ namespace Application.Core
                 .ForMember(dto => dto.BerthId, option =>
                     option.MapFrom(entity => entity.BerthId))
                 .ForMember(dto => dto.AdditionalServices, option => option.Ignore());
+            
+            CreateMap<Domain.Entities.Booking, BookingEditDataDto>()
+                .ForMember(dto => dto.Id, option =>
+                    option.MapFrom(entity => entity.Id))
+                .ForMember(dto => dto.StartDate, option =>
+                    option.MapFrom(entity => entity.StartDate))
+                .ForMember(dto => dto.EndDate, option =>
+                    option.MapFrom(entity => entity.EndDate))
+                .ForMember(dto => dto.ShipId, option =>
+                    option.MapFrom(entity => entity.ShipId))
+                .ForMember(dto => dto.BerthId, option =>
+                    option.MapFrom(entity => entity.BerthId))
+                .ForMember(dto => dto.HarborId, option =>
+                    option.MapFrom(entity => entity.Berth.HarborId))
+                .ForMember(dto => dto.AdditionalServices, option => option.Ignore());
+
             
             CreateMap<BookingDataDto, Booking>()
                 .ForMember(entity => entity.Id, option =>

@@ -26,5 +26,7 @@ namespace Application.DTOs
         public bool IsActive { get; set; }
         
         public List<ShipTypeDto> SuitableShipTypes { get; set; }
+        
+        public bool IsOwner { get; set; }
     }
 }
