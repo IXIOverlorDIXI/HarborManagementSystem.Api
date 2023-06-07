@@ -17,6 +17,7 @@ namespace Application.Ships
     {
         public class Query : IRequest<Result<List<ShipPreviewDataDto>>>
         {
+            public string Username { get; set; }
         }
 
         public class Handler : IRequestHandler<Query, Result<List<ShipPreviewDataDto>>>
@@ -37,6 +38,7 @@ namespace Application.Ships
             {
                 var ships = await _context.Ships
                     .Where(x => !x.IsDeleted)
+                    .Where(x => x.Owner.UserName.Equals(request.Username))
                     .ProjectTo<ShipPreviewDataDto>(_mapper.ConfigurationProvider)
                     .ToListAsync(cancellationToken);
 

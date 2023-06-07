@@ -13,9 +13,9 @@ namespace API.Controllers
     public class ShipController : BaseApiController
     {
         [HttpGet]
-        public async Task<IActionResult> GetAllShips()
+        public async Task<IActionResult> GetAllShips([Required] [FromQuery] string username)
         {
-            return HandleResult(await Mediator.Send(new ShipGetAll.Query { }));
+            return HandleResult(await Mediator.Send(new ShipGetAll.Query { Username = username}));
         }
         
         [HttpGet("byId")]
