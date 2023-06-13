@@ -77,10 +77,12 @@ namespace Application.Subscriptions
                     return Result<SubscriptionDto>.Failure("This subscription does not exists.");
                 }
 
-                if (subscriptions.Count(x => x.Price == 0) == 1
-                    && request.Subscription.Price > 0)
+                if ((subscriptions.Count(x => x.Price == 0) < 1 && request.Subscription.Price > 0)
+                    || (request.Subscription.Price > 0 
+                        && subscriptions.Count(x => x.Price == 0) == 1 
+                        && subscriptions.FirstOrDefault(x => x.Id.Equals(request.Subscription.Id)).Price == 0))
                 {
-                    return Result<SubscriptionDto>.Failure("Fail, it is the last free description.");
+                    return Result<SubscriptionDto>.Failure("Fail, it is the last free subscription.");
                 }
                 
                 var subscription = await _context.Subscriptions
