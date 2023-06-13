@@ -516,7 +516,7 @@ namespace Application.Core
                         Price = x.Service.Price
                     }).ToList()))
                 .ForMember(dto => dto.TotalCost, option =>
-                    option.MapFrom(entity => entity.AdditionalServices.Sum(x => x.Service.Price) + entity.Berth.Price));
+                    option.MapFrom(entity => entity.AdditionalServices.Sum(x => x.Service.Price) + entity.Berth.Price * (entity.EndDate - entity.StartDate).Days ));
 
         }
     }

@@ -58,7 +58,7 @@ namespace Application.BookingChecks
                 }
 
                 if (booking.AdditionalServices.Sum(x => x.Service.Price) + booking.Berth.Price
-                    != request.BookingCheck.TotalCost)
+                    * (booking.EndDate - booking.StartDate).Days != request.BookingCheck.TotalCost)
                 {
                     return Result<BookingCheckDataDto>.Failure("Fail, the booking check total sum is wrong.");
                 }

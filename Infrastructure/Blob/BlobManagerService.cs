@@ -22,32 +22,32 @@ namespace Infrastructure.Blob
                 config.GetValue<string>("AzureAD:ClientId"),
                 config.GetValue<string>("AzureAD:ClientSecret")
             );
-            
+
             _blobServiceClient = new BlobServiceClient(
-                new Uri(config.GetValue<string>("BlobStorage:BlobUrl")), 
+                new Uri(config.GetValue<string>("BlobStorage:BlobUrl")),
                 _clientSecretCredential);
-            
+
             _blobContainerClient = _blobServiceClient
                 .GetBlobContainerClient(config.GetValue<string>("BlobStorage:ContainerName"));
         }
 
         public async Task<string> UploadToBlobStorageAsync(
             Guid guid,
-            string fileNameWithExtension, 
-            Stream file, 
+            string fileNameWithExtension,
+            Stream file,
             BlobType type)
         {
             await CreateClient();
 
             file.Position = 0;
-            
+
             var blobName = String.Concat(
-                type.ToString(), 
-                '/', 
-                guid.ToString(), 
-                "-", 
+                type.ToString(),
+                '/',
+                guid.ToString(),
+                "-",
                 fileNameWithExtension);
-            
+
             var blobClient = _blobContainerClient.GetBlobClient(blobName);
             await blobClient.UploadAsync(file, true);
 
@@ -59,21 +59,21 @@ namespace Infrastructure.Blob
             try
             {
                 await CreateClient();
-            
+
                 var uri = new Uri(url);
-            
+
                 string containerName = uri.Segments[1];
-                string blobName = string.Concat(uri.Segments[2],uri.Segments[3]);
-            
+                string blobName = string.Concat(uri.Segments[2], uri.Segments[3]);
+
                 var blobClient = _blobContainerClient.GetBlobClient(blobName);
-                
+
                 await blobClient.DeleteIfExistsAsync();
             }
             catch
             {
                 return false;
             }
-            
+
             return true;
         }
 
